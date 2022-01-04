@@ -29,11 +29,6 @@ architecture behavioral of image_generator is
     constant v_max : integer := v_pulse+v_fp+v_bp+v_display-1;--520
     signal h_count : integer range 0 to h_max :=0;
     signal v_count : integer range 0 to v_max :=0;
-    signal h_pos:integer range 0 to h_display-1;
-    signal v_pos:integer range 0 to v_display-1;
-    signal dis_enabled  : std_logic;
-        
-
     signal clock25: std_logic := '0';
 begin
     process (clk)
@@ -76,10 +71,8 @@ begin
         if rising_edge(clk) then
             if v_count < v_display and h_count < h_display then
                 enabled <= '1';
-                dis_enabled<='1';
             else
                 enabled <= '0';
-                dis_enabled<='0';
             end if;
         end if;
     end process;

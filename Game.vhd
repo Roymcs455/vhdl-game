@@ -52,11 +52,20 @@ begin
     begin
         if rising_edge(clk) then
             if enabled = '1' then
-                if x_pos<100 then
-                    rgb_out <= X"FFF";
+                rgb_out <= X"000";
+                if y_pos mod 20 < 10 then
+                    if x_pos mod 20 < 10 then
+                        rgb_out <=X"000";
+                    else
+                        rgb_out <=X"FFF";
+                    end if;
                 else
-                    rgb_out <= X"F00";
-                end if;
+                    if x_pos mod 20 < 10 then
+                        rgb_out <=X"FFF";
+                    else
+                        rgb_out <=X"000";
+                    end if;
+                end if;                
             else
                 rgb_out<= X"000";
             end if;
