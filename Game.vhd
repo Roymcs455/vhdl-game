@@ -23,7 +23,8 @@ architecture behavioral of Game is
         h_sync  :   out std_logic;
         x_pos   :   out integer;
         y_pos   :   out integer;
-        enabled :   out std_logic
+        enabled :   out std_logic;
+        frame   :   out std_logic
     );
     end component;
 
@@ -31,6 +32,7 @@ architecture behavioral of Game is
     signal y_pos : integer range 0 to 480; 
     signal enabled: std_logic;
     signal clock25: std_logic := '0';
+    signal frame:   std_logic;
     
 begin
     imagen: image_generator
@@ -40,7 +42,8 @@ begin
             h_sync => h_sync,
             x_pos => x_pos,
             y_pos => y_pos,
-            enabled => enabled        
+            enabled => enabled,
+            frame => frame
         );
     process (clk)
     begin

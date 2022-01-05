@@ -20,7 +20,8 @@ entity image_generator is
         h_sync  :   out std_logic;
         x_pos   :   out integer;
         y_pos   :   out integer;
-        enabled :   out std_logic
+        enabled :   out std_logic;
+        frame   :   out std_logic
     );      
 end entity image_generator;
 
@@ -34,6 +35,7 @@ begin
     process (clk)
     begin
         if rising_edge(clk) then
+            frame <= '0';
             if h_count < h_max then
                 h_count <= h_count +1;
             else
@@ -42,6 +44,7 @@ begin
                     v_count <= v_count+1;
                 else
                     v_count <= 0;
+                    frame<='1';
                 end if;
             end if;
         end if;
