@@ -34,6 +34,11 @@ architecture behavioral of Game is
     signal clock25: std_logic := '0';
     signal frame:   std_logic;
     
+    signal bird_y_pos : integer range 0 to 480:=320;
+    signal bird_y_vel : integer range -100 to 100:=-10;
+    constant bird_y_applied: integer :=-20;
+    constant bird_y_acc: integer := 1;
+
 begin
     imagen: image_generator
         port map (
@@ -45,10 +50,33 @@ begin
             enabled => enabled,
             frame => frame
         );
-    process (clk)
+    bird_update_process:process (clk)
+    variable bird_update: integer range 0 to 50_000_000;
     begin
         if rising_edge(clk) then
             clock25 <= not clock25;
+            if bird_update < 3_000_000 then
+                bird_update := bird_update+1;
+            else
+                if bird_y_pos < 480 then
+                    bird_y_pos <= bird_y_pos+bird_y_vel;
+                    if button ='0' then
+                        bird_y_vel <= bird_y_applied;
+                    else
+                        if bird_y_vel < 10 then
+                            bird_y_vel <= bird_y_vel+bird_y_acc;
+                        else
+                            bird_y_vel <= bird_y_vel;
+                        end if;
+                    end if;
+                elsif bird_y_pos <= 0 then
+                    bird_y_pos <= 0;
+                else
+                    bird_y_pos <= 479;
+                end if;
+                bird_update:=0;                
+            end if;
+
         end if;
     end process;
     process (clk)
@@ -56,22 +84,17 @@ begin
         if rising_edge(clk) then
             if enabled = '1' then
                 rgb_out <= X"000";
-                if y_pos mod 20 < 10 then
-                    if x_pos mod 20 < 10 then
-                        rgb_out <=X"000";
-                    else
-                        rgb_out <=X"FFF";
+                if x_pos>=16 and x_pos <32 then
+                    rgb_out<=X"000";
+                    if y_pos>=bird_y_pos and y_pos<bird_y_pos+16 then
+                        rgb_out<=X"FF0";
                     end if;
-                else
-                    if x_pos mod 20 < 10 then
-                        rgb_out <=X"FFF";
-                    else
-                        rgb_out <=X"000";
-                    end if;
-                end if;                
+                end if;               
             else
                 rgb_out<= X"000";
             end if;
         end if;
     end process;
+    
+    
 end architecture;
