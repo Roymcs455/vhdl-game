@@ -59,13 +59,6 @@ architecture behavioral of Game is
 
     constant column_movement_speed : integer := 8;--2 pixeles por tick
     
-
-    
-    
-    -- signal brick_1_2_x_pos: integer:=640;
-    -- signal brick_1_2_width: integer:=48;
-    -- signal brick_1_height:integer:=200;
-    -- signal brick_2_height:integer:=160;
     constant column_width: integer :=40;
     constant column_gap: integer:= 80;
 
@@ -75,6 +68,11 @@ architecture behavioral of Game is
     signal column_2_x_pos:integer range -10 to 660:=319;
     signal column_2_y_pos: integer range 0 to 480-column_gap:=160;
 
+
+
+    type game_state is (start,alive,dead);
+    signal current_state : game_state;
+    signal next_state: game_state;
 begin
     imagen: image_generator
         port map (
@@ -103,39 +101,49 @@ begin
             if update < 2_500_000 then --cada tick sucede en 2500000 ciclos (50 ms)
                 update := update+1;
             else
-                if column_1_x_pos>0 then
-                    column_1_x_pos<= column_1_x_pos-column_movement_speed;
-                else
-                    column_1_x_pos<= 639;
-                    column_1_y_pos <=(rand_num mod 400);
+                if current_state = alive then
                     
-                end if;
-                if column_2_x_pos>0 then
-                    column_2_x_pos<= column_2_x_pos-column_movement_speed;
-                else
-                    column_2_x_pos<= 639;
-                    column_2_y_pos <=(rand_num mod 400);
-                end if;
-
-                if bird_y_pos < 480 and bird_y_pos >=0 then
-                    bird_y_pos <= bird_y_pos+bird_y_vel;
-                    if button ='0' then
-                        bird_y_vel <= bird_y_applied;
+                    if column_1_x_pos>0 then
+                        column_1_x_pos<= column_1_x_pos-column_movement_speed;
                     else
-                        if bird_y_vel < 20 then
-                            bird_y_vel <= bird_y_vel+bird_y_acc;
-                        else
-                            bird_y_vel <= bird_y_vel;
-                        end if;
+                        column_1_x_pos<= 639;
+                        column_1_y_pos <=(rand_num mod 400);
+                        
                     end if;
-                elsif bird_y_pos < 0 then
-                    bird_y_pos <= 0;
+                    if column_2_x_pos>0 then
+                        column_2_x_pos<= column_2_x_pos-column_movement_speed;
+                    else
+                        column_2_x_pos<= 639;
+                        column_2_y_pos <=(rand_num mod 400);
+                    end if;
+                    
+                    if bird_y_pos < 480 and bird_y_pos >=0 then
+                        bird_y_pos <= bird_y_pos+bird_y_vel;
+                        if button ='0' then
+                            bird_y_vel <= bird_y_applied;
+                        else
+                            if bird_y_vel < 20 then
+                                bird_y_vel <= bird_y_vel+bird_y_acc;
+                            else
+                                bird_y_vel <= bird_y_vel;
+                            end if;
+                        end if;
+                    elsif bird_y_pos < 0 then
+                        bird_y_pos <= 0;
+                        bird_y_vel <= 0;
+                    else
+                        bird_y_pos <= 479;
+                    end if;
+                elsif current_state = dead then
+                    bird_y_pos <= 220;
                     bird_y_vel <= 0;
-                else
-                    bird_y_pos <= 479;
+                    column_1_x_pos <= 639;
+                    column_1_y_pos <= 240;
+                    column_2_y_pos <= 240;
+                    column_2_x_pos <= 319;
+                elsif current_state = start then
                 end if;
                 update:=0;
-                
             end if;
 
         end if;
@@ -145,32 +153,39 @@ begin
         if rising_edge(clk) then
             if enabled = '1' then
                 rgb_out <= X"000";
-                if x_pos>=bird_x_pos and x_pos <bird_x_pos+bird_width then
-                    rgb_out<=X"000";
-                    if y_pos>=bird_y_pos and y_pos<bird_y_pos+bird_height then
-                        rgb_out<=X"0FF";
+                if current_state = alive then
+                    --jugando
+                    if x_pos>=bird_x_pos and x_pos <bird_x_pos+bird_width then
+                        rgb_out<=X"000";
+                        if y_pos>=bird_y_pos and y_pos<bird_y_pos+bird_height then
+                            rgb_out<=X"0FF";
+                        end if;
                     end if;
-                end if;
-                if x_pos>column_1_x_pos-column_width and x_pos<column_1_x_pos
-                and (y_pos<column_1_y_pos or y_pos>column_1_y_pos+column_gap)
-                then
-                    rgb_out<=X"00F";
-                end if;   
+                    if x_pos>column_1_x_pos-column_width and x_pos<column_1_x_pos
+                    and (y_pos<column_1_y_pos or y_pos>column_1_y_pos+column_gap)
+                    then
+                        rgb_out<=X"00F";
+                    end if;   
 
-                if x_pos>column_2_x_pos-column_width and x_pos<column_2_x_pos
-                and (y_pos<column_2_y_pos or y_pos>column_2_y_pos+column_gap)
-                then
-                    rgb_out<=X"00F";
-                end if;   
-                if y_pos = 240 then
-                    rgb_out<=X"fff";
-                end if;  
-            else
-                if colliding = '1' then
-                    rgb_out <=X"aaa";
-                else
-                    rgb_out<= X"000";
+                    if x_pos>column_2_x_pos-column_width and x_pos<column_2_x_pos
+                        and (y_pos<column_2_y_pos or y_pos>column_2_y_pos+column_gap)
+                    then
+                        rgb_out<=X"00F";
+                    end if;   
+                    if y_pos = 240 then
+                        if colliding='1'then
+                            rgb_out<=X"fff";
+                        else
+                            rgb_out<=X"000";
+                        end if;
+                    end if;  
+                elsif current_state = start then
+                    --dibujar press start
+                elsif current_state = dead then
+                    --dibujar dead press button
                 end if;
+            else
+                rgb_out<= X"000";
             end if;
         end if;
     end process;
@@ -195,6 +210,28 @@ begin
             then
                 colliding <= '1';
             end if;
+        end if;
+    end process;
+    state_manager:process (clk)
+    begin
+        if rising_edge(clk) then
+            current_state<=next_state;
+            case current_state is
+                when start =>
+                if button2 = '0' then
+                    next_state <= alive;
+                end if;
+                when alive =>
+                if colliding = '1' then
+                    next_state <= dead;
+                end if;
+                when dead  =>                    
+                if button = '0' then
+                    next_state <= start;
+                end if;
+                when others =>
+                    next_state<= start;
+            end case;
         end if;
     end process;
     
