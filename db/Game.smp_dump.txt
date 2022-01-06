@@ -1,0 +1,12 @@
+
+State Machine - |Game|next_state
+Name next_state.dead next_state.alive next_state.start 
+next_state.start 0 0 0 
+next_state.alive 0 1 1 
+next_state.dead 1 0 1 
+
+State Machine - |Game|current_state
+Name current_state.dead current_state.alive current_state.start 
+current_state.start 0 0 0 
+current_state.alive 0 1 1 
+current_state.dead 1 0 1 

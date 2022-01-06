@@ -180,9 +180,11 @@ begin
                         end if;
                     end if;  
                 elsif current_state = start then
+                    rgb_out<=X"F0F";
                     --dibujar press start
                 elsif current_state = dead then
                     --dibujar dead press button
+                    rgb_out<=X"FF0";
                 end if;
             else
                 rgb_out<= X"000";

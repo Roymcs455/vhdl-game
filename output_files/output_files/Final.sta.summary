@@ -1,0 +1,113 @@
+------------------------------------------------------------
+Timing Analyzer Summary
+------------------------------------------------------------
+
+Type  : Slow 1200mV 85C Model Setup 'image_generator:imagen|clock25'
+Slack : -2.604
+TNS   : -57.470
+
+Type  : Slow 1200mV 85C Model Setup 'clk'
+Slack : -0.831
+TNS   : -0.831
+
+Type  : Slow 1200mV 85C Model Setup 'clock25'
+Slack : -0.628
+TNS   : -0.628
+
+Type  : Slow 1200mV 85C Model Hold 'clock25'
+Slack : 0.612
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'clk'
+Slack : 0.613
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Hold 'image_generator:imagen|clock25'
+Slack : 0.636
+TNS   : 0.000
+
+Type  : Slow 1200mV 85C Model Minimum Pulse Width 'clk'
+Slack : -3.000
+TNS   : -4.403
+
+Type  : Slow 1200mV 85C Model Minimum Pulse Width 'image_generator:imagen|clock25'
+Slack : -1.403
+TNS   : -46.299
+
+Type  : Slow 1200mV 85C Model Minimum Pulse Width 'clock25'
+Slack : -1.403
+TNS   : -1.403
+
+Type  : Slow 1200mV 0C Model Setup 'image_generator:imagen|clock25'
+Slack : -2.309
+TNS   : -49.985
+
+Type  : Slow 1200mV 0C Model Setup 'clk'
+Slack : -0.727
+TNS   : -0.727
+
+Type  : Slow 1200mV 0C Model Setup 'clock25'
+Slack : -0.542
+TNS   : -0.542
+
+Type  : Slow 1200mV 0C Model Hold 'clk'
+Slack : 0.528
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Hold 'clock25'
+Slack : 0.562
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Hold 'image_generator:imagen|clock25'
+Slack : 0.589
+TNS   : 0.000
+
+Type  : Slow 1200mV 0C Model Minimum Pulse Width 'clk'
+Slack : -3.000
+TNS   : -4.403
+
+Type  : Slow 1200mV 0C Model Minimum Pulse Width 'image_generator:imagen|clock25'
+Slack : -1.403
+TNS   : -46.299
+
+Type  : Slow 1200mV 0C Model Minimum Pulse Width 'clock25'
+Slack : -1.403
+TNS   : -1.403
+
+Type  : Fast 1200mV 0C Model Setup 'image_generator:imagen|clock25'
+Slack : -0.488
+TNS   : -6.139
+
+Type  : Fast 1200mV 0C Model Setup 'clk'
+Slack : -0.088
+TNS   : -0.088
+
+Type  : Fast 1200mV 0C Model Setup 'clock25'
+Slack : 0.069
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'clock25'
+Slack : 0.210
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'image_generator:imagen|clock25'
+Slack : 0.244
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Hold 'clk'
+Slack : 0.271
+TNS   : 0.000
+
+Type  : Fast 1200mV 0C Model Minimum Pulse Width 'clk'
+Slack : -3.000
+TNS   : -4.156
+
+Type  : Fast 1200mV 0C Model Minimum Pulse Width 'image_generator:imagen|clock25'
+Slack : -1.000
+TNS   : -33.000
+
+Type  : Fast 1200mV 0C Model Minimum Pulse Width 'clock25'
+Slack : -1.000
+TNS   : -1.000
+
+------------------------------------------------------------
