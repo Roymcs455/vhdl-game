@@ -40,6 +40,7 @@ architecture behavioral of Game is
         );
     end component;
 
+    signal colliding: std_logic:= '0';
     signal rand_num : integer;
     signal x_pos : integer range 0 to 640;
     signal y_pos : integer range 0 to 480; 
@@ -50,20 +51,29 @@ architecture behavioral of Game is
 
     constant bird_x_pos: integer :=32;
     constant bird_width: integer :=16;
+    constant bird_height: integer := 16;
     signal bird_y_pos : integer range -100 to 520:=320;
     signal bird_y_vel : integer range -100 to 100:=-10;
     constant bird_y_applied: integer :=-10;
     constant bird_y_acc: integer := 1;
 
-    constant brick_movement_speed : integer := 2;--2 pixeles por tick
+    constant column_movement_speed : integer := 8;--2 pixeles por tick
     
 
-    constant brick_1_2_x_vel : integer := 8;
     
-    signal brick_1_2_x_pos: integer:=640;
-    signal brick_1_2_width: integer:=48;
-    signal brick_1_height:integer:=200;
-    signal brick_2_height:integer:=160;
+    
+    -- signal brick_1_2_x_pos: integer:=640;
+    -- signal brick_1_2_width: integer:=48;
+    -- signal brick_1_height:integer:=200;
+    -- signal brick_2_height:integer:=160;
+    constant column_width: integer :=40;
+    constant column_gap: integer:= 80;
+
+    signal column_1_x_pos:integer range -10 to 660:=639;
+    signal column_1_y_pos: integer range 0 to 480-column_gap:=200;
+
+    signal column_2_x_pos:integer range -10 to 660:=319;
+    signal column_2_y_pos: integer range 0 to 480-column_gap:=160;
 
 begin
     imagen: image_generator
@@ -82,24 +92,29 @@ begin
         resultado => rand_num
     );
     
-    bird_update_process:process (clk)
-    variable bird_update: integer range 0 to 50_000_000;
+    update_process:process (clk)
+    variable update: integer range 0 to 50_000_000;
     
     begin
         if rising_edge(clk) then
             
             clock25 <= not clock25;
             
-            if bird_update < 2_500_000 then --cada tick sucede en 2500000 ciclos (50 ms)
-                bird_update := bird_update+1;
+            if update < 2_500_000 then --cada tick sucede en 2500000 ciclos (50 ms)
+                update := update+1;
             else
-                if brick_1_2_x_pos>0 then
-                    brick_1_2_x_pos<= brick_1_2_x_pos-brick_1_2_x_vel;
+                if column_1_x_pos>0 then
+                    column_1_x_pos<= column_1_x_pos-column_movement_speed;
                 else
-                    brick_1_2_x_pos<= 639;
-                    brick_1_height <= brick_1_height+((rand_num mod 256)-128);
-                    brick_2_height <= brick_2_height-((rand_num mod 256)-128);
+                    column_1_x_pos<= 639;
+                    column_1_y_pos <=(rand_num mod 400);
                     
+                end if;
+                if column_2_x_pos>0 then
+                    column_2_x_pos<= column_2_x_pos-column_movement_speed;
+                else
+                    column_2_x_pos<= 639;
+                    column_2_y_pos <=(rand_num mod 400);
                 end if;
 
                 if bird_y_pos < 480 and bird_y_pos >=0 then
@@ -119,7 +134,7 @@ begin
                 else
                     bird_y_pos <= 479;
                 end if;
-                bird_update:=0;
+                update:=0;
                 
             end if;
 
@@ -132,21 +147,55 @@ begin
                 rgb_out <= X"000";
                 if x_pos>=bird_x_pos and x_pos <bird_x_pos+bird_width then
                     rgb_out<=X"000";
-                    if y_pos>=bird_y_pos and y_pos<bird_y_pos+16 then
+                    if y_pos>=bird_y_pos and y_pos<bird_y_pos+bird_height then
                         rgb_out<=X"0FF";
                     end if;
                 end if;
-                if x_pos>brick_1_2_x_pos-brick_1_2_width and x_pos<brick_1_2_x_pos
-                and (y_pos<brick_1_height or y_pos>480-brick_2_height)
+                if x_pos>column_1_x_pos-column_width and x_pos<column_1_x_pos
+                and (y_pos<column_1_y_pos or y_pos>column_1_y_pos+column_gap)
                 then
                     rgb_out<=X"00F";
+                end if;   
 
-                end if;     
+                if x_pos>column_2_x_pos-column_width and x_pos<column_2_x_pos
+                and (y_pos<column_2_y_pos or y_pos>column_2_y_pos+column_gap)
+                then
+                    rgb_out<=X"00F";
+                end if;   
+                if y_pos = 240 then
+                    rgb_out<=X"fff";
+                end if;  
             else
-                rgb_out<= X"000";
+                if colliding = '1' then
+                    rgb_out <=X"aaa";
+                else
+                    rgb_out<= X"000";
+                end if;
             end if;
         end if;
     end process;
     
+    collision_detection: process (clk)--detección de colisiones con el algoritmo AABB
+    --AABB: Axis Alligned Bounding Boxes
+    begin
+        if rising_edge(clk) then
+            colliding <='0';
+            if 
+                (bird_x_pos < column_1_x_pos+column_width) and
+                (bird_x_pos+bird_width> column_1_x_pos) and
+                (bird_y_pos< column_1_y_pos or bird_y_pos> column_1_y_pos+column_gap)
+            then
+                colliding <= '1';
+            end if;
+
+            if 
+                (bird_x_pos < column_2_x_pos+column_width) and
+                (bird_x_pos+bird_width> column_2_x_pos) and
+                (bird_y_pos< column_2_y_pos or bird_y_pos> column_2_y_pos+column_gap)
+            then
+                colliding <= '1';
+            end if;
+        end if;
+    end process;
     
 end architecture;
